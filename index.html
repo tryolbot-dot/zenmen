@@ -72,6 +72,7 @@
   </div>
   <p id="confirmacao-nome" style="color:#3f6b4a; font-weight:600; font-size:.85rem; margin-top:8px; display:none;"></p>
   <p id="total-mes" style="display:none; font-weight:700; color:#7d5a1f; margin-top:2px; font-size:.95rem;"></p>
+  <button class="btn secondary" style="margin-top:10px;" onclick="abrirModalFeminina()">💇‍♀️ Fecho de Caixa Feminina</button>
 </header>
 
 <div class="tabs" id="tabs"></div>
@@ -83,6 +84,139 @@
   <button class="btn" onclick="enviarControloCentral()">Enviar p/ controlo central</button>
 </footer>
 <div id="envio-status" style="position:fixed; left:0; right:0; bottom:56px; text-align:center; font-size:.75rem; color:#7d5a1f;"></div>
+
+<div id="modal-feminina-overlay" style="display:none; position:fixed; inset:0; background:rgba(36,31,28,.55); z-index:100; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fffaf0; border-radius:14px; max-width:420px; width:100%; max-height:88vh; overflow-y:auto; padding:20px; position:relative;">
+    <button onclick="fecharModalFeminina()" style="position:absolute; top:10px; right:12px; border:none; background:none; font-size:1.3rem; color:#8a7d6c; cursor:pointer;">×</button>
+    <h2 style="font-family:Georgia, serif; font-size:1.2rem; margin:0 0 4px;">💇‍♀️ Fecho de Caixa Feminina</h2>
+    <p style="font-size:.78rem; color:#8a7d6c; margin:0 0 14px;">Caixa separada da barbearia — não entra nos separadores dos dias.</p>
+    <div id="fem-data-label" style="font-size:.85rem; color:#6b6055; margin-bottom:14px; padding:8px 10px; background:#f6f0e4; border-radius:8px;"></div>
+
+    <div id="fem-corpo"></div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY_FEM = "fechoCaixaFemininaOCR_v1";
+let stateFem = carregarEstadoFem();
+let femDataAtual = null;
+let diaAtivoIdx = 0; // atualizado por selecionarDia() no script principal
+
+function carregarEstadoFem(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY_FEM);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {};
+}
+function guardarEstadoFem(){ localStorage.setItem(STORAGE_KEY_FEM, JSON.stringify(stateFem)); }
+
+function abrirModalFeminina(){
+  document.getElementById("modal-feminina-overlay").style.display = "flex";
+  const dataISO = dataRealDoDia(diaAtivoIdx);
+  const labelDia = WEEKDAYS[diaAtivoIdx] ? WEEKDAYS[diaAtivoIdx].label : "";
+  femDataAtual = dataISO || ("dia-" + labelDia); // chave estável mesmo sem data real definida
+  document.getElementById("fem-data-label").innerHTML =
+    dataISO ? `📅 ${labelDia} — ${dataISO.split("-").reverse().join("-")}`
+            : `📅 ${labelDia} <span style="color:#a4442f;">(define a "Segunda-feira desta semana" no topo para teres a data real)</span>`;
+  renderModalFeminina();
+}
+function fecharModalFeminina(){
+  document.getElementById("modal-feminina-overlay").style.display = "none";
+}
+
+function fundoTransitadoFeminina(dataISO){
+  const datas = Object.keys(stateFem).filter(d => d < dataISO).sort();
+  for(let i = datas.length - 1; i >= 0; i--){
+    const dia = stateFem[datas[i]];
+    const base = (dia.deixaCaixa !== undefined && dia.deixaCaixa !== "") ? dia.deixaCaixa : dia.dinheiroContado;
+    if(base !== undefined && base !== ""){
+      const v = parseFloat(base);
+      if(!isNaN(v)) return { valor: v, data: datas[i] };
+    }
+  }
+  return null;
+}
+
+function editarFeminina(campo, valor){
+  if(!stateFem[femDataAtual]) stateFem[femDataAtual] = {};
+  stateFem[femDataAtual][campo] = valor;
+  guardarEstadoFem();
+  renderModalFeminina();
+}
+
+function renderModalFeminina(){
+  if(!femDataAtual) return;
+  const d = stateFem[femDataAtual] || {};
+  const transitado = fundoTransitadoFeminina(femDataAtual);
+  const fundoAuto = !!transitado;
+  const fundoInicial = fundoAuto ? transitado.valor : (parseFloat(d.fundoInicial) || 0);
+  const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
+  const temContagem = dinheiroContado !== null && !isNaN(dinheiroContado);
+  const deixaCaixaVal = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
+  const temFica = deixaCaixaVal !== null && !isNaN(deixaCaixaVal);
+  const retirado = (temContagem && temFica) ? (dinheiroContado - deixaCaixaVal) : 0;
+  const recebidoHoje = temContagem ? (dinheiroContado - fundoInicial) : null;
+
+  document.getElementById("fem-corpo").innerHTML = `
+    <div style="margin-bottom:10px;">
+      ${fundoAuto
+        ? `<div style="font-size:.85rem; color:#6b6055;">Fundo inicial (transita de ${transitado.data.split("-").reverse().slice(0,2).join("-")}): <b>${fundoInicial.toFixed(2).replace(".",",")} €</b></div>`
+        : `<label style="display:block; font-size:.78rem; color:#6b6055; margin-bottom:4px;">Fundo inicial €</label>
+           <input type="number" step="0.5" value="${d.fundoInicial ?? ""}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ded2ba;"
+                  onchange="editarFeminina('fundoInicial', this.value)">`}
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="display:block; font-size:.78rem; color:#6b6055; margin-bottom:4px;">Dinheiro contado €</label>
+      <input type="number" step="0.5" value="${d.dinheiroContado ?? ""}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ded2ba;"
+             onchange="editarFeminina('dinheiroContado', this.value)">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:.78rem; color:#6b6055; margin-bottom:4px;">Fica em caixa p/ amanhã €</label>
+      <input type="number" step="0.5" value="${d.deixaCaixa ?? ""}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ded2ba;"
+             onchange="editarFeminina('deixaCaixa', this.value)">
+    </div>
+    <div style="font-size:.8rem; color:#6b6055; line-height:1.6; margin-bottom:14px;">
+      ${temContagem ? `Recebido hoje (contado − fundo): <b>${recebidoHoje.toFixed(2).replace(".",",")} €</b>` : "Falta contar o dinheiro."}
+      ${temContagem && temFica ? `<br>Retiras hoje: <b>${retirado.toFixed(2).replace(".",",")} €</b>` : ""}
+    </div>
+    <button class="btn" style="width:100%;" onclick="enviarFeminina()">Enviar p/ controlo central</button>
+    <div id="fem-status" style="font-size:.75rem; color:#7d5a1f; text-align:center; margin-top:8px;"></div>
+  `;
+}
+
+async function enviarFeminina(){
+  const statusEl = document.getElementById("fem-status");
+  if(WEBHOOK_URL.startsWith("COLA_AQUI")){ statusEl.textContent = "Falta configurar o URL do controlo central."; return; }
+  const d = stateFem[femDataAtual] || {};
+  const transitado = fundoTransitadoFeminina(femDataAtual);
+  const fundoInicial = transitado ? transitado.valor : (parseFloat(d.fundoInicial) || 0);
+  const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
+  const deixaCaixa = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
+  statusEl.textContent = "A enviar...";
+  try{
+    const resp = await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        tipo: "feminina",
+        fechosCaixaFeminina: [{
+          data: femDataAtual,
+          fundoInicial,
+          dinheiroContado,
+          recebidoHoje: dinheiroContado !== null ? (dinheiroContado - fundoInicial) : null,
+          deixaCaixa,
+          retirado: (dinheiroContado !== null && deixaCaixa !== null) ? (dinheiroContado - deixaCaixa) : null
+        }]
+      })
+    });
+    const json = await resp.json();
+    statusEl.textContent = `Enviado às ${new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"})}.`;
+  }catch(err){
+    statusEl.textContent = "Erro ao enviar — tenta outra vez.";
+  }
+}
+</script>
 
 <script>
 const WEEKDAYS = [
@@ -391,6 +525,7 @@ if(config.funcionario){
 }
 
 function selecionarDia(idx){
+  diaAtivoIdx = idx;
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active", i===idx));
   document.querySelectorAll(".day").forEach((d,i)=>d.classList.toggle("active", i===idx));
 }
