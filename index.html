@@ -355,8 +355,12 @@ async function enviarControloCentral(){
       body: JSON.stringify({ funcionario: config.funcionario, registos, fechosCaixa })
     });
     const json = await resp.json();
-    statusEl.textContent = `Enviado: ${json.recebidos ?? registos.length} registos às ${new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"})}.`;
-    atualizarTotalMes();
+    if(json.status === "erro"){
+      statusEl.textContent = `Erro no servidor: ${json.mensagem}`;
+    } else {
+      statusEl.textContent = `Enviado: ${json.recebidos ?? registos.length} registos às ${new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"})}.`;
+      atualizarTotalMes();
+    }
   }catch(err){
     statusEl.textContent = "Erro ao enviar — confirma a ligação à internet e tenta outra vez.";
   }
