@@ -197,6 +197,7 @@ async function enviarControloCentral(){
         fundoInicial = parseFloat(d.fundoInicial) || 0;
       }
       const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
+      const deixaCaixa = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
       fechosCaixa.push({
         data: dataISO || "",
         dia: w.label,
@@ -204,7 +205,9 @@ async function enviarControloCentral(){
         recebidoSistema: totEurDia,
         esperado: fundoInicial + totEurDia,
         dinheiroContado: dinheiroContado,
-        diferenca: dinheiroContado !== null ? (dinheiroContado - (fundoInicial + totEurDia)) : null
+        diferenca: dinheiroContado !== null ? (dinheiroContado - (fundoInicial + totEurDia)) : null,
+        deixaCaixa: deixaCaixa,
+        retirado: (dinheiroContado !== null && deixaCaixa !== null) ? (dinheiroContado - deixaCaixa) : null
       });
     }
   });
@@ -235,9 +238,12 @@ function fundoTransitadoDe(idx){
     const anterior = state[WEEKDAYS[j].id];
     if(!anterior) break;
     if(anterior.folga) continue;
+    const ficaCaixa = anterior.deixaCaixa;
     const contado = anterior.dinheiroContado;
-    if(contado !== undefined && contado !== ""){
-      const v = parseFloat(contado);
+    // usa "fica em caixa" se preenchido; senão assume que ficou tudo o que foi contado
+    const base = (ficaCaixa !== undefined && ficaCaixa !== "") ? ficaCaixa : contado;
+    if(base !== undefined && base !== ""){
+      const v = parseFloat(base);
       if(!isNaN(v)) return { valor: v, diaLabel: WEEKDAYS[j].label };
     }
     if(anterior.rows && anterior.rows.length) break; // dia por fechar - não continuar a recuar
@@ -479,6 +485,9 @@ function renderDia(dayId){
     const temContagem = dinheiroContado !== null && !isNaN(dinheiroContado);
     const diferenca = temContagem ? (dinheiroContado - esperado) : null;
     const corDif = !temContagem ? "#8a7d6c" : (Math.abs(diferenca) < 0.005 ? "#3f6b4a" : "#a4442f");
+    const deixaCaixaVal = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
+    const temFica = deixaCaixaVal !== null && !isNaN(deixaCaixaVal);
+    const retirado = (temContagem && temFica) ? (dinheiroContado - deixaCaixaVal) : 0;
     html += `
       <div class="row" style="border-color:#a3762b;">
         <div style="font-weight:700; margin-bottom:10px;">🔒 Fecho de Caixa do Dia</div>
@@ -495,9 +504,15 @@ function renderDia(dayId){
                    onchange="editarFechoCaixa('${dayId}','dinheiroContado',this.value)">
           </div>
         </div>
+        <div class="row-controls" style="margin-bottom:10px;">
+          <div class="valor-wrap"><span title="Do que contaste, quanto deixas na gaveta (o resto é o que retiras)">Fica em caixa p/ amanhã €</span>
+            <input type="number" inputmode="decimal" step="0.5" value="${d.deixaCaixa ?? ""}"
+                   onchange="editarFechoCaixa('${dayId}','deixaCaixa',this.value)">
+          </div>
+        </div>
         <div style="font-size:.8rem; color:#6b6055; line-height:1.6;">
           Devia estar em caixa: <b>${esperado.toFixed(2).replace(".",",")} €</b> (fundo + € recebido hoje)<br>
-          Diferença: <b style="color:${corDif};">${temContagem ? diferenca.toFixed(2).replace(".",",")+" €" : "— (falta contar)"}</b>
+          Diferença: <b style="color:${corDif};">${temContagem ? diferenca.toFixed(2).replace(".",",")+" €" : "— (falta contar)"}</b>${temContagem && temFica ? `<br>Retiras hoje: <b>${retirado.toFixed(2).replace(".",",")} €</b>` : ""}
         </div>
       </div>`;
   } else {
