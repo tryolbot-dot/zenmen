@@ -172,6 +172,7 @@ async function enviarControloCentral(){
     return;
   }
   const registos = [];
+  const fechosCaixa = [];
   WEEKDAYS.forEach((w, idx) => {
     const d = state[w.id];
     if(d.folga || !d.rows.length) return;
@@ -186,6 +187,27 @@ async function enviarControloCentral(){
         metodo: r.metodo === "NP" ? "Não pagou" : (r.metodo || "")
       });
     });
+    if(d.fundoInicial !== undefined || d.dinheiroContado !== undefined){
+      const totEurDia = d.rows.reduce((s,r)=> s + (r.metodo==="€" ? (parseFloat(r.valor)||0) : 0), 0);
+      let fundoInicial = 0;
+      if(idx > 0){
+        const anterior = state[WEEKDAYS[idx-1].id];
+        const contadoAnterior = anterior && anterior.dinheiroContado !== undefined && anterior.dinheiroContado !== "" ? parseFloat(anterior.dinheiroContado) : null;
+        fundoInicial = (contadoAnterior !== null && !isNaN(contadoAnterior)) ? contadoAnterior : (parseFloat(d.fundoInicial) || 0);
+      } else {
+        fundoInicial = parseFloat(d.fundoInicial) || 0;
+      }
+      const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
+      fechosCaixa.push({
+        data: dataISO || "",
+        dia: w.label,
+        fundoInicial: fundoInicial,
+        recebidoSistema: totEurDia,
+        esperado: fundoInicial + totEurDia,
+        dinheiroContado: dinheiroContado,
+        diferenca: dinheiroContado !== null ? (dinheiroContado - (fundoInicial + totEurDia)) : null
+      });
+    }
   });
   if(!registos.length){ statusEl.textContent = "Não há marcações preenchidas para enviar."; return; }
 
@@ -194,7 +216,7 @@ async function enviarControloCentral(){
     const resp = await fetch(WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ funcionario: config.funcionario, registos })
+      body: JSON.stringify({ funcionario: config.funcionario, registos, fechosCaixa })
     });
     const json = await resp.json();
     statusEl.textContent = `Enviado: ${json.recebidos ?? registos.length} registos às ${new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"})}.`;
@@ -424,6 +446,44 @@ function renderDia(dayId){
         </div>
         <div class="breakdown">€ ${totEur.toFixed(2).replace(".",",")} · MBW ${totMbw.toFixed(2).replace(".",",")} · ER ${totEr.toFixed(2).replace(".",",")}${totNP>0 ? " · Por cobrar "+totNP.toFixed(2).replace(".",",") : ""}</div>
       </div>`;
+
+    let fundoInicial = 0, fundoAuto = false, diaAnteriorLabel = "";
+    if(idx > 0){
+      const anterior = state[WEEKDAYS[idx-1].id];
+      const contadoAnterior = anterior && anterior.dinheiroContado !== undefined && anterior.dinheiroContado !== "" ? parseFloat(anterior.dinheiroContado) : null;
+      if(contadoAnterior !== null && !isNaN(contadoAnterior)){
+        fundoInicial = contadoAnterior;
+        fundoAuto = true;
+        diaAnteriorLabel = WEEKDAYS[idx-1].label;
+      }
+    }
+    if(!fundoAuto){ fundoInicial = parseFloat(d.fundoInicial) || 0; }
+    const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
+    const esperado = fundoInicial + totEur;
+    const temContagem = dinheiroContado !== null && !isNaN(dinheiroContado);
+    const diferenca = temContagem ? (dinheiroContado - esperado) : null;
+    const corDif = !temContagem ? "#8a7d6c" : (Math.abs(diferenca) < 0.005 ? "#3f6b4a" : "#a4442f");
+    html += `
+      <div class="row" style="border-color:#a3762b;">
+        <div style="font-weight:700; margin-bottom:10px;">🔒 Fecho de Caixa do Dia</div>
+        <div class="row-controls" style="margin-bottom:8px;">
+          ${fundoAuto
+            ? `<div style="font-size:.85rem; color:#6b6055;">Fundo inicial (transita de ${diaAnteriorLabel}): <b>${fundoInicial.toFixed(2).replace(".",",")} €</b></div>`
+            : `<div class="valor-wrap"><span title="Só na primeira vez — depois transita sozinho todos os dias">Fundo inicial €</span>
+                <input type="number" inputmode="decimal" step="0.5" value="${d.fundoInicial ?? ""}"
+                       onchange="editarFechoCaixa('${dayId}','fundoInicial',this.value)"></div>`}
+        </div>
+        <div class="row-controls" style="margin-bottom:10px;">
+          <div class="valor-wrap"><span title="Conta o dinheiro físico na gaveta agora">Dinheiro contado €</span>
+            <input type="number" inputmode="decimal" step="0.5" value="${d.dinheiroContado ?? ""}"
+                   onchange="editarFechoCaixa('${dayId}','dinheiroContado',this.value)">
+          </div>
+        </div>
+        <div style="font-size:.8rem; color:#6b6055; line-height:1.6;">
+          Devia estar em caixa: <b>${esperado.toFixed(2).replace(".",",")} €</b> (fundo + € recebido hoje)<br>
+          Diferença: <b style="color:${corDif};">${temContagem ? diferenca.toFixed(2).replace(".",",")+" €" : "— (falta contar)"}</b>
+        </div>
+      </div>`;
   } else {
     html += `<div class="add-row"><button class="btn secondary" onclick="adicionarLinha('${dayId}')">+ adicionar cliente à mão</button></div>`;
   }
@@ -434,6 +494,12 @@ function renderDia(dayId){
     if(!files.length){ document.getElementById(`status_${dayId}`).textContent = "Escolhe primeiro os screenshots deste dia."; return; }
     processarDia(dayId, files);
   };
+}
+
+function editarFechoCaixa(dayId, campo, valor){
+  state[dayId][campo] = valor;
+  guardarEstado();
+  renderDia(dayId);
 }
 
 function editarCampo(dayId, idx, campo, valor){
