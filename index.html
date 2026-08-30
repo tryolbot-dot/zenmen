@@ -191,9 +191,8 @@ async function enviarControloCentral(){
       const totEurDia = d.rows.reduce((s,r)=> s + (r.metodo==="€" ? (parseFloat(r.valor)||0) : 0), 0);
       let fundoInicial = 0;
       if(idx > 0){
-        const anterior = state[WEEKDAYS[idx-1].id];
-        const contadoAnterior = anterior && anterior.dinheiroContado !== undefined && anterior.dinheiroContado !== "" ? parseFloat(anterior.dinheiroContado) : null;
-        fundoInicial = (contadoAnterior !== null && !isNaN(contadoAnterior)) ? contadoAnterior : (parseFloat(d.fundoInicial) || 0);
+        const transitado = fundoTransitadoDe(idx);
+        fundoInicial = transitado ? transitado.valor : (parseFloat(d.fundoInicial) || 0);
       } else {
         fundoInicial = parseFloat(d.fundoInicial) || 0;
       }
@@ -227,6 +226,24 @@ async function enviarControloCentral(){
 }
 
 function estadoInicialDia(){ return { title:null, folga:false, rows:[] }; }
+
+// Procura, a partir do dia anterior a idx, o dinheiro contado mais recente,
+// saltando dias de folga. Para na primeira quebra real (dia com marcações
+// mas ainda por contar) para não "adivinhar" através de um dia por fechar.
+function fundoTransitadoDe(idx){
+  for(let j = idx - 1; j >= 0; j--){
+    const anterior = state[WEEKDAYS[j].id];
+    if(!anterior) break;
+    if(anterior.folga) continue;
+    const contado = anterior.dinheiroContado;
+    if(contado !== undefined && contado !== ""){
+      const v = parseFloat(contado);
+      if(!isNaN(v)) return { valor: v, diaLabel: WEEKDAYS[j].label };
+    }
+    if(anterior.rows && anterior.rows.length) break; // dia por fechar - não continuar a recuar
+  }
+  return null;
+}
 
 function carregarEstado(){
   try{
@@ -449,12 +466,11 @@ function renderDia(dayId){
 
     let fundoInicial = 0, fundoAuto = false, diaAnteriorLabel = "";
     if(idx > 0){
-      const anterior = state[WEEKDAYS[idx-1].id];
-      const contadoAnterior = anterior && anterior.dinheiroContado !== undefined && anterior.dinheiroContado !== "" ? parseFloat(anterior.dinheiroContado) : null;
-      if(contadoAnterior !== null && !isNaN(contadoAnterior)){
-        fundoInicial = contadoAnterior;
+      const transitado = fundoTransitadoDe(idx);
+      if(transitado){
+        fundoInicial = transitado.valor;
         fundoAuto = true;
-        diaAnteriorLabel = WEEKDAYS[idx-1].label;
+        diaAnteriorLabel = transitado.diaLabel;
       }
     }
     if(!fundoAuto){ fundoInicial = parseFloat(d.fundoInicial) || 0; }
