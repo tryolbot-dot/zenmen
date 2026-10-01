@@ -9,57 +9,98 @@
 <style>
   :root{
     --ink:#241f1c; --paper:#f6f0e4; --card:#fffaf0; --line:#ded2ba;
-    --brass:#a3762b; --brass-dark:#7d5a1f;
+    --brass:#a3762b; --brass-dark:#7d5a1f; --verde:#3f6b4a; --vermelho:#a4442f;
     --shadow: 0 1px 2px rgba(36,31,28,.08);
   }
   *{box-sizing:border-box;}
-  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Segoe UI', Arial, sans-serif; padding-bottom:110px; }
-  header{ padding:20px 18px 10px; text-align:center; }
-  header h1{ font-family:Georgia, 'Times New Roman', serif; font-size:1.5rem; margin:0 0 2px; }
-  header p{ margin:0; font-size:.78rem; color:#6b6055; text-transform:uppercase; letter-spacing:.1em; }
-  .tabs{ display:flex; gap:6px; overflow-x:auto; padding:6px 14px 12px; -webkit-overflow-scrolling:touch; }
-  .tab{ flex:0 0 auto; padding:8px 14px; border-radius:999px; border:1px solid var(--line);
-        background:var(--card); font-size:.82rem; font-weight:600; cursor:pointer; white-space:nowrap; color:#6b6055; }
-  .tab.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
-  main{ padding:0 14px; max-width:640px; margin:0 auto; }
-  .day{ display:none; } .day.active{ display:block; }
-  .upload-box{ background:var(--card); border:1.5px dashed var(--line); border-radius:12px; padding:16px; margin-bottom:14px; text-align:center; }
-  .upload-box input[type=file]{ display:block; margin:8px auto 10px; font-size:.82rem; }
-  .btn{ background:var(--brass); color:#fff; border:none; padding:9px 18px; border-radius:999px; font-size:.85rem; font-weight:700; cursor:pointer; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Segoe UI', Arial, sans-serif; padding-bottom:120px; }
+  header{ padding:18px 16px 8px; text-align:center; }
+  header h1{ font-family:Georgia,'Times New Roman',serif; font-size:1.45rem; margin:0 0 2px; }
+  header p{ margin:0; font-size:.76rem; color:#6b6055; text-transform:uppercase; letter-spacing:.1em; }
+  .btn{ background:var(--brass); color:#fff; border:none; padding:9px 18px; border-radius:999px;
+        font-size:.85rem; font-weight:700; cursor:pointer; }
   .btn:disabled{ opacity:.5; }
   .btn.secondary{ background:transparent; color:var(--brass-dark); border:1px solid var(--brass); }
+  .btn.small{ padding:6px 12px; font-size:.78rem; }
+
+  .semana-nav{ display:flex; align-items:center; justify-content:center; gap:10px; margin:12px 0 6px; }
+  .semana-nav button{ border:1px solid var(--line); background:var(--card); border-radius:8px;
+                      width:34px; height:34px; font-size:1rem; cursor:pointer; color:var(--brass-dark); }
+  #semana-titulo{ font-size:.9rem; font-weight:700; min-width:170px; }
+
+  .tabs{ display:flex; gap:6px; overflow-x:auto; padding:6px 14px 12px; -webkit-overflow-scrolling:touch; }
+  .tab{ flex:0 0 auto; padding:8px 13px; border-radius:999px; border:1px solid var(--line);
+        background:var(--card); font-size:.8rem; font-weight:600; cursor:pointer; white-space:nowrap; color:#6b6055;
+        display:flex; flex-direction:column; align-items:center; line-height:1.25; }
+  .tab.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .tab .marca{ font-size:.62rem; font-weight:700; }
+  .tab .por-enviar{ color:var(--vermelho); }
+  .tab.active .por-enviar{ color:#ffb4a2; }
+  .tab .enviado{ color:var(--verde); }
+  .tab.active .enviado{ color:#a8d5b5; }
+
+  main{ padding:0 14px; max-width:640px; margin:0 auto; }
+  .day{ display:none; } .day.active{ display:block; }
+  .upload-box{ background:var(--card); border:1.5px dashed var(--line); border-radius:12px;
+               padding:14px; margin-bottom:12px; text-align:center; }
+  .upload-box input[type=file]{ display:block; margin:8px auto 10px; font-size:.8rem; }
   .status{ font-size:.78rem; color:#8a7d6c; margin-top:8px; min-height:16px; }
-  .row{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px; box-shadow:var(--shadow); position:relative; }
+
+  .aviso{ border-radius:10px; padding:10px 12px; font-size:.82rem; margin-bottom:10px; line-height:1.5; }
+  .aviso.alerta{ background:#fbe9e5; border:1px solid var(--vermelho); color:#7d2f1f; }
+  .aviso.ok{ background:#e8f0e9; border:1px solid var(--verde); color:#2c4d35; }
+
+  .row{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px;
+        margin-bottom:10px; box-shadow:var(--shadow); position:relative; }
+  .row.duplo{ border-color:var(--brass); background:#fff6e2; }
   .row-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; }
-  .hora{ font-family:'Courier New', monospace; font-weight:700; color:var(--brass-dark); font-size:.95rem; flex:0 0 auto;
-         background:transparent; border:none; width:64px; min-width:64px; padding:0; }
-  .cliente{ font-size:.9rem; flex:1; text-align:left; border:none; background:transparent; font-family:inherit; color:inherit; }
+  .hora{ font-family:'Courier New',monospace; font-weight:700; color:var(--brass-dark); font-size:.95rem;
+         flex:0 0 auto; background:transparent; border:none; width:106px; min-width:106px; padding:0; }
+  .cliente{ font-size:.9rem; flex:1; text-align:left; border:none; background:transparent;
+            font-family:inherit; color:inherit; }
   .row-controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .valor-wrap{ display:flex; align-items:center; gap:4px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:6px 8px; }
-  .valor-wrap input{ width:64px; border:none; outline:none; font-size:.95rem; font-family:'Courier New', monospace; background:transparent; text-align:right; }
+  .valor-wrap{ display:flex; align-items:center; gap:4px; background:#fff; border:1px solid var(--line);
+               border-radius:8px; padding:6px 8px; }
+  .valor-wrap input{ width:64px; border:none; outline:none; font-size:.95rem;
+                     font-family:'Courier New',monospace; background:transparent; text-align:right; }
   .metodos{ display:flex; gap:6px; margin-left:auto; }
   .metodo{ position:relative; }
   .metodo input{ position:absolute; opacity:0; inset:0; cursor:pointer; }
-  .metodo label{ display:flex; align-items:center; justify-content:center; width:36px; height:30px; border-radius:7px;
-                 border:1px solid var(--line); font-size:.74rem; font-weight:700; color:#8a7d6c; background:#fff; }
+  .metodo label{ display:flex; align-items:center; justify-content:center; width:36px; height:30px;
+                 border-radius:7px; border:1px solid var(--line); font-size:.74rem; font-weight:700;
+                 color:#8a7d6c; background:#fff; }
   .metodo input:checked + label{ background:var(--brass); border-color:var(--brass); color:#fff; }
-  .del{ position:absolute; top:6px; right:8px; border:none; background:none; color:#b6a891; font-size:1rem; cursor:pointer; padding:2px 6px; }
+  .del{ position:absolute; top:6px; right:8px; border:none; background:none; color:#b6a891;
+        font-size:1rem; cursor:pointer; padding:2px 6px; }
   .add-row{ text-align:center; margin:6px 0 16px; }
-  .day-summary{ position:sticky; bottom:0; background:var(--ink); color:var(--paper); border-radius:12px; margin:14px 0;
-                padding:14px 16px; display:flex; justify-content:space-between; align-items:center; font-family:'Courier New', monospace; }
+
+  .day-summary{ position:sticky; bottom:0; background:var(--ink); color:var(--paper); border-radius:12px;
+                margin:14px 0; padding:14px 16px; display:flex; justify-content:space-between;
+                align-items:center; font-family:'Courier New',monospace; }
   .day-summary .tot{ font-size:1.25rem; font-weight:700; }
   .day-summary .breakdown{ font-size:.7rem; opacity:.75; text-align:right; line-height:1.5; }
-  .folga-toggle{ text-align:center; margin:10px 0 4px; }
+
   footer{ position:fixed; left:0; right:0; bottom:0; background:var(--paper); border-top:1px solid var(--line);
-          padding:10px 16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+          padding:10px 14px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
   .nota{ font-size:.72rem; color:#8a7d6c; text-align:center; margin:4px 0 14px; }
+
+  .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(36,31,28,.55); z-index:100;
+                  align-items:center; justify-content:center; padding:16px; }
+  .modal-box{ background:var(--card); border-radius:14px; max-width:420px; width:100%; max-height:88vh;
+              overflow-y:auto; padding:20px; position:relative; }
+  .modal-box h2{ font-family:Georgia,serif; font-size:1.15rem; margin:0 0 4px; }
+  .modal-close{ position:absolute; top:10px; right:12px; border:none; background:none; font-size:1.3rem;
+                color:#8a7d6c; cursor:pointer; }
+  .campo{ margin-bottom:10px; }
+  .campo label{ display:block; font-size:.78rem; color:#6b6055; margin-bottom:4px; }
+  .campo input{ width:100%; padding:8px; border-radius:8px; border:1px solid var(--line); font-size:.9rem; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>Fecho de Caixa</h1>
-  <p id="instrucao">1. Escolhe o teu nome → 2. Escolhe o dia em baixo → 3. Carrega os screenshots e toca em "Processar"</p>
+  <p id="instrucao">Carrega os screenshots e preenche</p>
   <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:10px;">
     <select id="funcionario-select" style="padding:7px 10px; border-radius:8px; border:1px solid #ded2ba; font-size:.85rem;" onchange="mudarFuncionario(this.value)">
       <option value="">Quem és tu?</option>
@@ -68,379 +109,185 @@
       <option value="Samuel">Samuel</option>
       <option value="Outro">Outro...</option>
     </select>
-    <input type="date" id="semana-inicio" style="padding:7px 10px; border-radius:8px; border:1px solid #ded2ba; font-size:.85rem;" onchange="mudarSemanaInicio(this.value)" title="Data da Segunda-feira desta semana">
   </div>
-  <p id="confirmacao-nome" style="color:#3f6b4a; font-weight:600; font-size:.85rem; margin-top:8px; display:none;"></p>
-  <p id="total-mes" style="display:none; font-weight:700; color:#7d5a1f; margin-top:2px; font-size:.95rem;"></p>
-  <div id="total-mes-todos" style="display:none; margin-top:10px; padding:10px 14px; background:#fffaf0; border:1px solid #ded2ba; border-radius:10px; max-width:280px; margin-left:auto; margin-right:auto;">
-    <div style="font-size:.68rem; color:#8a7d6c; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px;">Faturação do mês — todos</div>
+  <p id="confirmacao-nome" style="color:var(--verde); font-weight:600; font-size:.85rem; margin-top:8px; display:none;"></p>
+  <p id="total-mes" style="display:none; font-weight:700; color:var(--brass-dark); margin-top:2px; font-size:.95rem;"></p>
+  <div id="total-mes-todos" style="display:none; margin-top:10px; padding:10px 14px; background:var(--card); border:1px solid var(--line); border-radius:10px; max-width:280px; margin-left:auto; margin-right:auto;">
+    <div style="font-size:.66rem; color:#8a7d6c; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px;">Faturação do mês — todos</div>
     <div id="total-mes-todos-lista" style="font-size:.85rem; line-height:1.7; text-align:left;"></div>
   </div>
-  <button class="btn secondary" style="margin-top:10px;" onclick="abrirModalFeminina()">💇‍♀️ Fecho de Caixa Feminina</button>
+  <button class="btn secondary small" style="margin-top:10px;" onclick="abrirModalFeminina()">💇‍♀️ Fecho de Caixa Feminina</button>
 </header>
+
+<div class="semana-nav">
+  <button onclick="navegarSemana(-1)" title="Semana anterior">‹</button>
+  <span id="semana-titulo"></span>
+  <button onclick="navegarSemana(1)" title="Semana seguinte">›</button>
+</div>
+<div style="text-align:center; margin-bottom:4px;">
+  <button class="btn secondary small" onclick="irSemanaAtual()">Semana atual</button>
+</div>
 
 <div class="tabs" id="tabs"></div>
 <main id="days"></main>
 
 <footer>
-  <button class="btn secondary" onclick="novaSemanaFn()">Nova semana (limpar tudo)</button>
-  <button class="btn secondary" onclick="exportarExcel()">Exportar para Excel</button>
-  <button class="btn" onclick="enviarControloCentral()">Enviar p/ controlo central</button>
+  <button class="btn secondary" onclick="exportarExcel()">Exportar Excel</button>
+  <button class="btn" onclick="enviarSemanaVista()">Enviar esta semana</button>
 </footer>
-<div id="envio-status" style="position:fixed; left:0; right:0; bottom:56px; text-align:center; font-size:.75rem; color:#7d5a1f;"></div>
+<div id="envio-status" style="position:fixed; left:0; right:0; bottom:56px; text-align:center; font-size:.75rem; color:var(--brass-dark); padding:0 12px;"></div>
 
-<div id="modal-feminina-overlay" style="display:none; position:fixed; inset:0; background:rgba(36,31,28,.55); z-index:100; align-items:center; justify-content:center; padding:16px;">
-  <div style="background:#fffaf0; border-radius:14px; max-width:420px; width:100%; max-height:88vh; overflow-y:auto; padding:20px; position:relative;">
-    <button onclick="fecharModalFeminina()" style="position:absolute; top:10px; right:12px; border:none; background:none; font-size:1.3rem; color:#8a7d6c; cursor:pointer;">×</button>
-    <h2 style="font-family:Georgia, serif; font-size:1.2rem; margin:0 0 4px;">💇‍♀️ Fecho de Caixa Feminina</h2>
-    <p style="font-size:.78rem; color:#8a7d6c; margin:0 0 14px;">Caixa separada da barbearia — não entra nos separadores dos dias.</p>
-    <div id="fem-data-label" style="font-size:.85rem; color:#6b6055; margin-bottom:14px; padding:8px 10px; background:#f6f0e4; border-radius:8px;"></div>
-
+<!-- Modal: caixa feminina -->
+<div id="modal-feminina-overlay" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharModalFeminina()">×</button>
+    <h2>💇‍♀️ Fecho de Caixa Feminina</h2>
+    <p style="font-size:.78rem; color:#8a7d6c; margin:0 0 14px;">Caixa separada da barbearia.</p>
+    <div id="fem-data-label" style="font-size:.85rem; color:#6b6055; margin-bottom:14px; padding:8px 10px; background:var(--paper); border-radius:8px;"></div>
     <div id="fem-corpo"></div>
   </div>
 </div>
 
-<script>
-const STORAGE_KEY_FEM = "fechoCaixaFemininaOCR_v1";
-let stateFem = carregarEstadoFem();
-let femDataAtual = null;
-let diaAtivoIdx = 0; // atualizado por selecionarDia() no script principal
-
-function carregarEstadoFem(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY_FEM);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return {};
-}
-function guardarEstadoFem(){ localStorage.setItem(STORAGE_KEY_FEM, JSON.stringify(stateFem)); }
-
-function abrirModalFeminina(){
-  document.getElementById("modal-feminina-overlay").style.display = "flex";
-  const dataISO = dataRealDoDia(diaAtivoIdx);
-  const labelDia = WEEKDAYS[diaAtivoIdx] ? WEEKDAYS[diaAtivoIdx].label : "";
-  femDataAtual = dataISO || ("dia-" + labelDia); // chave estável mesmo sem data real definida
-  document.getElementById("fem-data-label").innerHTML =
-    dataISO ? `📅 ${labelDia} — ${dataISO.split("-").reverse().join("-")}`
-            : `📅 ${labelDia} <span style="color:#a4442f;">(define a "Segunda-feira desta semana" no topo para teres a data real)</span>`;
-  renderModalFeminina();
-}
-function fecharModalFeminina(){
-  document.getElementById("modal-feminina-overlay").style.display = "none";
-}
-
-function fundoTransitadoFeminina(dataISO){
-  const datas = Object.keys(stateFem).filter(d => d < dataISO).sort();
-  for(let i = datas.length - 1; i >= 0; i--){
-    const dia = stateFem[datas[i]];
-    const base = (dia.deixaCaixa !== undefined && dia.deixaCaixa !== "") ? dia.deixaCaixa : dia.dinheiroContado;
-    if(base !== undefined && base !== ""){
-      const v = parseFloat(base);
-      if(!isNaN(v)) return { valor: v, data: datas[i] };
-    }
-  }
-  return null;
-}
-
-function editarFeminina(campo, valor){
-  if(!stateFem[femDataAtual]) stateFem[femDataAtual] = {};
-  stateFem[femDataAtual][campo] = valor;
-  guardarEstadoFem();
-  renderModalFeminina();
-}
-
-function renderModalFeminina(){
-  if(!femDataAtual) return;
-  const d = stateFem[femDataAtual] || {};
-  const transitado = fundoTransitadoFeminina(femDataAtual);
-  const fundoAuto = !!transitado;
-  const fundoInicial = fundoAuto ? transitado.valor : (parseFloat(d.fundoInicial) || 0);
-  const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
-  const temContagem = dinheiroContado !== null && !isNaN(dinheiroContado);
-  const deixaCaixaVal = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
-  const temFica = deixaCaixaVal !== null && !isNaN(deixaCaixaVal);
-  const retirado = (temContagem && temFica) ? (dinheiroContado - deixaCaixaVal) : 0;
-  const recebidoHoje = temContagem ? (dinheiroContado - fundoInicial) : null;
-
-  document.getElementById("fem-corpo").innerHTML = `
-    <div style="margin-bottom:10px;">
-      ${fundoAuto
-        ? `<div style="font-size:.85rem; color:#6b6055;">Fundo inicial (transita de ${transitado.data.split("-").reverse().slice(0,2).join("-")}): <b>${fundoInicial.toFixed(2).replace(".",",")} €</b></div>`
-        : `<label style="display:block; font-size:.78rem; color:#6b6055; margin-bottom:4px;">Fundo inicial €</label>
-           <input type="number" step="0.5" value="${d.fundoInicial ?? ""}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ded2ba;"
-                  onchange="editarFeminina('fundoInicial', this.value)">`}
+<!-- Modal: serviço duplo -->
+<div id="modal-duplo-overlay" class="modal-overlay">
+  <div class="modal-box">
+    <h2>Mesmo nome em vagas seguidas</h2>
+    <p style="font-size:.82rem; color:#6b6055; line-height:1.5;" id="duplo-texto"></p>
+    <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+      <button class="btn" onclick="resolverDuplo('um')">Um serviço de 1h — um valor</button>
+      <button class="btn secondary" onclick="resolverDuplo('dois')">Dois serviços — dois valores</button>
     </div>
-    <div style="margin-bottom:10px;">
-      <label style="display:block; font-size:.78rem; color:#6b6055; margin-bottom:4px;">Dinheiro contado €</label>
-      <input type="number" step="0.5" value="${d.dinheiroContado ?? ""}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ded2ba;"
-             onchange="editarFeminina('dinheiroContado', this.value)">
-    </div>
-    <div style="margin-bottom:12px;">
-      <label style="display:block; font-size:.78rem; color:#6b6055; margin-bottom:4px;">Fica em caixa p/ amanhã €</label>
-      <input type="number" step="0.5" value="${d.deixaCaixa ?? ""}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ded2ba;"
-             onchange="editarFeminina('deixaCaixa', this.value)">
-    </div>
-    <div style="font-size:.8rem; color:#6b6055; line-height:1.6; margin-bottom:14px;">
-      ${temContagem ? `Recebido hoje (contado − fundo): <b>${recebidoHoje.toFixed(2).replace(".",",")} €</b>` : "Falta contar o dinheiro."}
-      ${temContagem && temFica ? `<br>Retiras hoje: <b>${retirado.toFixed(2).replace(".",",")} €</b>` : ""}
-    </div>
-    <button class="btn" style="width:100%;" onclick="enviarFeminina()">Enviar p/ controlo central</button>
-    <div id="fem-status" style="font-size:.75rem; color:#7d5a1f; text-align:center; margin-top:8px;"></div>
-  `;
-}
-
-async function enviarFeminina(){
-  const statusEl = document.getElementById("fem-status");
-  if(WEBHOOK_URL.startsWith("COLA_AQUI")){ statusEl.textContent = "Falta configurar o URL do controlo central."; return; }
-  const d = stateFem[femDataAtual] || {};
-  const transitado = fundoTransitadoFeminina(femDataAtual);
-  const fundoInicial = transitado ? transitado.valor : (parseFloat(d.fundoInicial) || 0);
-  const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
-  const deixaCaixa = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
-  statusEl.textContent = "A enviar...";
-  try{
-    const resp = await fetch(WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        tipo: "feminina",
-        fechosCaixaFeminina: [{
-          data: femDataAtual,
-          fundoInicial,
-          dinheiroContado,
-          recebidoHoje: dinheiroContado !== null ? (dinheiroContado - fundoInicial) : null,
-          deixaCaixa,
-          retirado: (dinheiroContado !== null && deixaCaixa !== null) ? (dinheiroContado - deixaCaixa) : null
-        }]
-      })
-    });
-    const json = await resp.json();
-    statusEl.textContent = `Enviado às ${new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"})}.`;
-  }catch(err){
-    statusEl.textContent = "Erro ao enviar — tenta outra vez.";
-  }
-}
-</script>
+  </div>
+</div>
 
 <script>
-const WEEKDAYS = [
-  {id:"seg", label:"Segunda"}, {id:"ter", label:"Terça"}, {id:"qua", label:"Quarta"},
-  {id:"qui", label:"Quinta"}, {id:"sex", label:"Sexta"}, {id:"sab", label:"Sábado"},
-];
-
-const METODOS = [
-  {value:"€", label:"€", title:"Pago em dinheiro"},
-  {value:"MBW", label:"MBW", title:"Pago por MB Way"},
-  {value:"ER", label:"ER", title:"Pago por ER"},
-  {value:"NP", label:"N/P", title:"Não pagou / por cobrar"},
-];
-// ---------- Envio para o controlo central (Google Sheets) ------------------
-// Depois de criares o Google Apps Script (ver instruções), cola aqui o URL
-// do "Web App" que ele te dá:
+/* =======================================================================
+   CONFIGURAÇÃO
+   ======================================================================= */
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyINMqRVEalOIaYpzYUsNz4aKMN4o8zf366dTfWPUYRdmx4NOQRk7X3cPIH8YlNazXNmQ/exec";
 
-const STORAGE_KEY = "fechoCaixaOCR_v1";
-const CONFIG_KEY = "fechoCaixaConfig_v1";
-let config = carregarConfig();
-let state = carregarEstado();
-let worker = null;
+const STORAGE_KEY   = "fechoCaixaDias_v2";      // marcações, por DATA real
+const ARQUIVO_KEY   = "fechoCaixaArquivo_v2";   // meses anteriores já enviados
+const CONFIG_KEY    = "fechoCaixaConfig_v2";
+const STORAGE_FEM   = "fechoCaixaFeminina_v2";
 
-function carregarConfig(){
-  try{
-    const raw = localStorage.getItem(CONFIG_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return { funcionario:"", semanaInicio:"" };
-}
-function guardarConfig(){ localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); }
-
-function mudarFuncionario(v){
-  if(v==="Outro"){
-    const nome = prompt("Escreve o teu nome:");
-    if(nome){ config.funcionario = nome; } else { return; }
-  } else {
-    config.funcionario = v;
-  }
-  guardarConfig();
-  const conf = document.getElementById("confirmacao-nome");
-  conf.style.display = "block";
-  conf.textContent = `Olá, ${config.funcionario}! Agora escolhe o dia em baixo e carrega os screenshots.`;
-  document.getElementById("tabs").scrollIntoView({behavior:"smooth", block:"center"});
-  atualizarTotalMes();
-}
-function mudarSemanaInicio(v){
-  config.semanaInicio = v;
-  guardarConfig();
-  WEEKDAYS.forEach(w => renderDia(w.id));
-}
-
-function dataRealDoDia(dayIdx){
-  if(!config.semanaInicio) return null;
-  const base = new Date(config.semanaInicio + "T00:00:00");
-  base.setDate(base.getDate() + dayIdx);
-  const yyyy = base.getFullYear();
-  const mm = String(base.getMonth()+1).padStart(2,"0");
-  const dd = String(base.getDate()).padStart(2,"0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-const MESES_PT = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-
-async function atualizarTotalMes(){
-  const el = document.getElementById("total-mes");
-  if(!config.funcionario || WEBHOOK_URL.startsWith("COLA_AQUI")){ el.style.display = "none"; return; }
-  try{
-    const resp = await fetch(`${WEBHOOK_URL}?acao=totalMes&funcionario=${encodeURIComponent(config.funcionario)}`);
-    const json = await resp.json();
-    el.textContent = `Faturação de ${MESES_PT[json.mes-1]}: ${Number(json.total).toFixed(2).replace(".",",")} €`;
-    el.style.display = "block";
-  }catch(err){
-    // falha silenciosa - não é crítico para continuar a preencher
-  }
-  atualizarTotalMesTodos();
-}
-
-async function atualizarTotalMesTodos(){
-  const box = document.getElementById("total-mes-todos");
-  const lista = document.getElementById("total-mes-todos-lista");
-  if(WEBHOOK_URL.startsWith("COLA_AQUI")){ box.style.display = "none"; return; }
-  try{
-    const resp = await fetch(`${WEBHOOK_URL}?acao=totalMesTodos`);
-    const json = await resp.json();
-    const nomes = Object.keys(json.totais || {}).sort();
-    if(!nomes.length){ box.style.display = "none"; return; }
-    lista.innerHTML = nomes.map(n =>
-      `<div style="display:flex; justify-content:space-between; gap:12px;">
-        <span>${n}</span><b>${Number(json.totais[n]).toFixed(2).replace(".",",")} €</b>
-      </div>`
-    ).join("");
-    box.style.display = "block";
-  }catch(err){
-    box.style.display = "none";
-  }
-}
-
-async function enviarControloCentral(){
-  const statusEl = document.getElementById("envio-status");
-  if(WEBHOOK_URL.startsWith("COLA_AQUI")){
-    statusEl.textContent = "Ainda não configuraste o URL do controlo central (vê as instruções).";
-    return;
-  }
-  if(!config.funcionario){
-    statusEl.textContent = "Escolhe primeiro quem és, no topo da página.";
-    return;
-  }
-  const registos = [];
-  const fechosCaixa = [];
-  WEEKDAYS.forEach((w, idx) => {
-    const d = state[w.id];
-    if(d.folga || !d.rows.length) return;
-    const dataISO = dataRealDoDia(idx);
-    d.rows.forEach(r => {
-      registos.push({
-        data: dataISO || "",
-        dia: w.label,
-        hora: r.hora,
-        cliente: r.cliente,
-        valor: parseFloat(r.valor) || 0,
-        metodo: r.metodo === "NP" ? "Não pagou" : (r.metodo || "")
-      });
-    });
-    if(d.fundoInicial !== undefined || d.dinheiroContado !== undefined){
-      const totEurDia = d.rows.reduce((s,r)=> s + (r.metodo==="€" ? (parseFloat(r.valor)||0) : 0), 0);
-      let fundoInicial = 0;
-      if(idx > 0){
-        const transitado = fundoTransitadoDe(idx);
-        fundoInicial = transitado ? transitado.valor : (parseFloat(d.fundoInicial) || 0);
-      } else {
-        fundoInicial = parseFloat(d.fundoInicial) || 0;
-      }
-      const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
-      const deixaCaixa = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
-      fechosCaixa.push({
-        data: dataISO || "",
-        dia: w.label,
-        fundoInicial: fundoInicial,
-        recebidoSistema: totEurDia,
-        esperado: fundoInicial + totEurDia,
-        dinheiroContado: dinheiroContado,
-        diferenca: dinheiroContado !== null ? (dinheiroContado - (fundoInicial + totEurDia)) : null,
-        deixaCaixa: deixaCaixa,
-        retirado: (dinheiroContado !== null && deixaCaixa !== null) ? (dinheiroContado - deixaCaixa) : null
-      });
-    }
-  });
-  if(!registos.length){ statusEl.textContent = "Não há marcações preenchidas para enviar."; return; }
-
-  statusEl.textContent = "A enviar...";
-  try{
-    const resp = await fetch(WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ funcionario: config.funcionario, registos, fechosCaixa })
-    });
-    const json = await resp.json();
-    if(json.status === "erro"){
-      statusEl.textContent = `Erro no servidor: ${json.mensagem}`;
-    } else {
-      statusEl.textContent = `Enviado: ${json.recebidos ?? registos.length} registos às ${new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"})}.`;
-      atualizarTotalMes();
-    }
-  }catch(err){
-    statusEl.textContent = "Erro ao enviar — confirma a ligação à internet e tenta outra vez.";
-  }
-}
-
-function estadoInicialDia(){ return { title:null, folga:false, rows:[] }; }
-
-// Procura, a partir do dia anterior a idx, o dinheiro contado mais recente,
-// saltando dias de folga. Para na primeira quebra real (dia com marcações
-// mas ainda por contar) para não "adivinhar" através de um dia por fechar.
-function fundoTransitadoDe(idx){
-  for(let j = idx - 1; j >= 0; j--){
-    const anterior = state[WEEKDAYS[j].id];
-    if(!anterior) break;
-    if(anterior.folga) continue;
-    const ficaCaixa = anterior.deixaCaixa;
-    const contado = anterior.dinheiroContado;
-    // usa "fica em caixa" se preenchido; senão assume que ficou tudo o que foi contado
-    const base = (ficaCaixa !== undefined && ficaCaixa !== "") ? ficaCaixa : contado;
-    if(base !== undefined && base !== ""){
-      const v = parseFloat(base);
-      if(!isNaN(v)) return { valor: v, diaLabel: WEEKDAYS[j].label };
-    }
-    if(anterior.rows && anterior.rows.length) break; // dia por fechar - não continuar a recuar
-  }
-  return null;
-}
-
-function carregarEstado(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  const s = {};
-  WEEKDAYS.forEach(w => s[w.id] = estadoInicialDia());
-  return s;
-}
-function guardarEstado(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-// ---------- OCR + parsing (equivalente ao script Python) -------------------
+const DIAS_SEMANA = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+const MESES_PT = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+                  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const MONTH_PT = {"janeiro":1,"fevereiro":2,"marco":3,"março":3,"abril":4,"maio":5,"junho":6,
   "julho":7,"agosto":8,"setembro":9,"outubro":10,"novembro":11,"dezembro":12};
+const METODOS = [
+  {value:"€",   label:"€",   title:"Dinheiro"},
+  {value:"MBW", label:"MBW", title:"MB Way"},
+  {value:"ER",  label:"ER",  title:"ER"},
+  {value:"NP",  label:"N/P", title:"Não pagou"}
+];
+
+/* =======================================================================
+   ESTADO — a chave é SEMPRE a data real (yyyy-mm-dd).
+   Nenhuma marcação está presa a "a semana em curso", por isso nada
+   pode ser re-datado quando a semana muda.
+   ======================================================================= */
+let dias     = carregarJSON(STORAGE_KEY, {});
+let arquivo  = carregarJSON(ARQUIVO_KEY, {});
+let config   = carregarJSON(CONFIG_KEY, { funcionario:"" });
+let stateFem = carregarJSON(STORAGE_FEM, {});
+
+let semanaVista = null;   // segunda-feira da semana mostrada
+let dataAtiva   = null;   // data do separador aberto
+let worker      = null;
+let duploPendente = null; // { data, indices:[], cliente }
+
+function carregarJSON(chave, omissao){
+  try{ const r = localStorage.getItem(chave); if(r) return JSON.parse(r); }catch(e){}
+  return omissao;
+}
+function guardarDias(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(dias)); }
+function guardarArquivo(){ localStorage.setItem(ARQUIVO_KEY, JSON.stringify(arquivo)); }
+function guardarConfig(){ localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); }
+function guardarFem(){ localStorage.setItem(STORAGE_FEM, JSON.stringify(stateFem)); }
+
+function diaDe(dataISO){
+  if(!dias[dataISO]) dias[dataISO] = { folga:false, enviado:false, rows:[] };
+  return dias[dataISO];
+}
+
+/* =======================================================================
+   DATAS
+   ======================================================================= */
+function isoDe(d){
+  return d.getFullYear() + "-" +
+         String(d.getMonth()+1).padStart(2,"0") + "-" +
+         String(d.getDate()).padStart(2,"0");
+}
+function dataDeISO(iso){
+  const p = iso.split("-");
+  return new Date(Number(p[0]), Number(p[1])-1, Number(p[2]));
+}
+function segundaDe(d){
+  const ds = d.getDay();                       // 0=Domingo
+  const diff = (ds === 0 ? -6 : 1 - ds);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+}
+function somarDias(iso, n){
+  const d = dataDeISO(iso);
+  return isoDe(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n));
+}
+function ddmm(iso){ const p = iso.split("-"); return p[2] + "-" + p[1]; }
+function datasDaSemana(segISO){
+  const out = [];
+  for(let i=0; i<6; i++) out.push(somarDias(segISO, i));
+  return out;
+}
+
+/* =======================================================================
+   PRAZO DE ENVIO
+   Regra: uma semana deve ser enviada até ao domingo seguinte, à noite.
+   Depois disso ainda é possível enviar, mas exige confirmação e fica
+   assinalado na folha como fora de prazo.
+   ======================================================================= */
+function foraDePrazo(segISO){
+  const limite = dataDeISO(somarDias(segISO, 6));   // domingo dessa semana
+  limite.setHours(23, 59, 59, 999);
+  return new Date() > limite;
+}
+
+/* =======================================================================
+   ARQUIVO MENSAL — ao mudar de mês, os dias já enviados de meses
+   anteriores saem da vista e vão para o arquivo (continuam acessíveis).
+   ======================================================================= */
+function arquivarMesesAnteriores(){
+  const hoje = new Date();
+  const mesAtual = hoje.getFullYear() + "-" + String(hoje.getMonth()+1).padStart(2,"0");
+  let mudou = false;
+  Object.keys(dias).forEach(function(iso){
+    const mes = iso.substring(0,7);
+    if(mes < mesAtual && dias[iso].enviado){
+      arquivo[iso] = dias[iso];
+      delete dias[iso];
+      mudou = true;
+    }
+  });
+  if(mudou){ guardarDias(); guardarArquivo(); }
+}
+
+/* =======================================================================
+   OCR
+   ======================================================================= */
 function semAcentos(s){ return s.normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
 
 function parseOcrText(text){
-  const lines = text.split("\n").map(l => l.replace(/\s+$/,""));
-  let detectedDate = null;
+  const linhas = text.split("\n").map(l => l.replace(/\s+$/,""));
+  let dataDetetada = null;
   const dateRe = /(\d{1,2})\s+de\s+(\w+)\s+de\s+(\d{4})/i;
-  for(const ln of lines){
+  for(const ln of linhas){
     const m = ln.match(dateRe);
     if(m){
       const mes = MONTH_PT[semAcentos(m[2]).toLowerCase()];
-      if(mes){ detectedDate = [parseInt(m[1]), mes, parseInt(m[3])]; break; }
+      if(mes){
+        dataDetetada = m[3] + "-" + String(mes).padStart(2,"0") + "-" + String(m[1]).padStart(2,"0");
+        break;
+      }
     }
   }
 
@@ -448,33 +295,30 @@ function parseOcrText(text){
   const keywordRe = /(Cabelo|Barba)/i;
   const rows = [];
   let i = 0;
-  function letras(s, n){ return (s.match(/[A-Za-zÀ-ÿ]/g)||[]).length >= n; }
+  const letras = (s,n) => (s.match(/[A-Za-zÀ-ÿ]/g)||[]).length >= n;
 
-  while(i < lines.length){
-    const line = lines[i].trim();
-    const m = line.match(timeRe);
+  while(i < linhas.length){
+    const linha = linhas[i].trim();
+    const m = linha.match(timeRe);
     if(!m){ i++; continue; }
     const hora = m[1];
-    let rest = m[2].trim();
-    const candidate = letras(rest, 3);
-    let parts = candidate ? [rest] : [];
+    const resto = m[2].trim();
+    const candidato = letras(resto, 3);
+    let partes = candidato ? [resto] : [];
     let j = i+1, cont = 0;
-    while(candidate && j < lines.length && cont < 2){
-      const nxt = lines[j].trim();
-      if(!nxt || timeRe.test(nxt)) break;
-      if(letras(nxt, 2)){ parts.push(nxt); cont++; j++; } else break;
+    while(candidato && j < linhas.length && cont < 2){
+      const seg = linhas[j].trim();
+      if(!seg || timeRe.test(seg)) break;
+      if(letras(seg, 2)){ partes.push(seg); cont++; j++; } else break;
     }
-    if(candidate){
-      const combined = parts.join(" ");
-      const km = combined.match(keywordRe);
-      if(km){
-        rows.push([hora, combined.slice(km.index).trim()]);
-        i = j; continue;
-      }
+    if(candidato){
+      const junto = partes.join(" ");
+      const km = junto.match(keywordRe);
+      if(km){ rows.push({ hora: hora, cliente: junto.slice(km.index).trim() }); i = j; continue; }
     }
     i++;
   }
-  return {date: detectedDate, rows};
+  return { data: dataDetetada, rows: rows };
 }
 
 async function getWorker(){
@@ -484,269 +328,689 @@ async function getWorker(){
   return worker;
 }
 
-async function processarDia(dayId, files){
-  const statusEl = document.getElementById("status_"+dayId);
-  const btn = document.getElementById("btn_"+dayId);
+async function processarDia(dataISO, files){
+  const statusEl = document.getElementById("status_" + dataISO);
+  const btn = document.getElementById("btn_" + dataISO);
   btn.disabled = true;
+
   const w = await getWorker();
-  let merged = {}; // hora -> texto
-  let detectedDate = null;
+  const juntas = {};
+  let dataDetetada = null;
+
   for(let k=0; k<files.length; k++){
     statusEl.textContent = `A ler imagem ${k+1} de ${files.length}...`;
     const { data: { text } } = await w.recognize(files[k]);
-    const parsed = parseOcrText(text);
-    if(parsed.date && !detectedDate) detectedDate = parsed.date;
-    parsed.rows.forEach(([hora, texto]) => {
-      if(!merged[hora]) merged[hora] = texto;
-    });
+    const p = parseOcrText(text);
+    if(p.data && !dataDetetada) dataDetetada = p.data;
+    p.rows.forEach(function(r){ if(!juntas[r.hora]) juntas[r.hora] = r.cliente; });
   }
-  const orderedRows = Object.keys(merged).sort().map(h => ({hora:h, cliente:merged[h], valor:"", metodo:null}));
-  state[dayId].rows = orderedRows;
-  state[dayId].folga = false;
-  if(detectedDate){
-    const meses = Object.keys(MONTH_PT);
-    const nomeMes = meses.find(k => MONTH_PT[k]===detectedDate[1] && k.length>3);
-    state[dayId].title = `${detectedDate[0]} de ${nomeMes.charAt(0).toUpperCase()+nomeMes.slice(1)} de ${detectedDate[2]}`;
+
+  // Confirmação: a data lida no screenshot bate certo com o dia escolhido?
+  if(dataDetetada && dataDetetada !== dataISO){
+    const ok = confirm(
+      "Atenção!\n\n" +
+      "O screenshot é do dia " + ddmm(dataDetetada) + ".\n" +
+      "Estás a lançar no dia " + ddmm(dataISO) + ".\n\n" +
+      "Queres mesmo continuar?"
+    );
+    if(!ok){
+      statusEl.textContent = "Cancelado. Escolhe o dia certo e tenta outra vez.";
+      btn.disabled = false;
+      return;
+    }
   }
-  statusEl.textContent = orderedRows.length
-    ? `${orderedRows.length} marcações encontradas. Revê os nomes e os horários abaixo.`
-    : `Não encontrei marcações nestas imagens — confirma os screenshots ou adiciona linhas à mão.`;
+
+  const ordenadas = Object.keys(juntas).sort().map(h => ({
+    hora: h, cliente: juntas[h], valor:"", metodo:null, fim:null
+  }));
+
+  const d = diaDe(dataISO);
+  d.rows = ordenadas;
+  d.folga = false;
+  d.enviado = false;
+  if(dataDetetada) d.dataOcr = dataDetetada;
+
+  statusEl.textContent = ordenadas.length
+    ? ordenadas.length + " marcações encontradas. Confere os nomes."
+    : "Não encontrei marcações. Confirma os screenshots ou adiciona à mão.";
   btn.disabled = false;
-  guardarEstado();
-  renderDia(dayId);
+  guardarDias();
+  renderDia(dataISO);
+  detetarNomesSeguidos(dataISO);
 }
 
-// ---------------------- Render / UI ----------------------------------------
-const tabsEl = document.getElementById("tabs");
-const daysEl = document.getElementById("days");
-
-WEEKDAYS.forEach((w, idx) => {
-  const tab = document.createElement("div");
-  tab.className = "tab" + (idx===0 ? " active":"");
-  tab.id = "tab_"+w.id;
-  tab.textContent = w.label;
-  tab.onclick = () => selecionarDia(idx);
-  tabsEl.appendChild(tab);
-
-  const dayDiv = document.createElement("div");
-  dayDiv.className = "day" + (idx===0 ? " active":"");
-  dayDiv.id = "daybox_"+w.id;
-  daysEl.appendChild(dayDiv);
-  renderDia(w.id);
-});
-
-document.getElementById("semana-inicio").value = config.semanaInicio || "";
-if(config.funcionario && ["Zé-Tó","Joel","Samuel"].includes(config.funcionario)){
-  document.getElementById("funcionario-select").value = config.funcionario;
-} else if(config.funcionario){
-  const sel = document.getElementById("funcionario-select");
-  const opt = document.createElement("option");
-  opt.value = config.funcionario; opt.textContent = config.funcionario;
-  sel.insertBefore(opt, sel.lastElementChild);
-  sel.value = config.funcionario;
+/* =======================================================================
+   NOMES IGUAIS EM VAGAS SEGUIDAS
+   Pode ser um serviço de 1h (um valor) ou dois serviços (dois valores,
+   ex. pai que marca para os dois filhos). Só quem preencheu sabe,
+   por isso perguntamos.
+   ======================================================================= */
+// "aa Cliente não habitual" é um nome genérico: duas vagas seguidas com
+// esse texto são quase sempre duas pessoas diferentes, não o mesmo cliente.
+function clienteGenerico(nome){
+  const n = semAcentos(String(nome||"")).toLowerCase();
+  // "habitual" sozinho chega: o OCR por vezes estraga o "não"
+  // (já apareceu "ndo habitual") mas a última palavra mantém-se.
+  return n.indexOf("habitual") !== -1;
 }
 
-if(config.funcionario){
-  const conf = document.getElementById("confirmacao-nome");
-  conf.style.display = "block";
-  conf.textContent = `Olá, ${config.funcionario}! Escolhe o dia em baixo e carrega os screenshots.`;
-  atualizarTotalMes();
-} else {
-  atualizarTotalMesTodos();
-}
-
-function selecionarDia(idx){
-  diaAtivoIdx = idx;
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active", i===idx));
-  document.querySelectorAll(".day").forEach((d,i)=>d.classList.toggle("active", i===idx));
-}
-
-function renderDia(dayId){
-  const idx = WEEKDAYS.findIndex(x=>x.id===dayId);
-  const w = WEEKDAYS[idx];
-  const d = state[dayId];
-  const box = document.getElementById("daybox_"+dayId);
-  const tab = document.getElementById("tab_"+dayId);
-  const dataISO = dataRealDoDia(idx);
-  let dataLabel = "";
-  if(dataISO){
-    const [yyyy,mm,dd] = dataISO.split("-");
-    dataLabel = " · "+dd+"/"+mm;
-  } else if(d.title){
-    dataLabel = " · "+d.title.split(" de ")[0]+"/"+String(MONTH_PT[semAcentos(d.title.split(" de ")[1]).toLowerCase()]).padStart(2,"0");
+function detetarNomesSeguidos(dataISO){
+  const d = diaDe(dataISO);
+  for(let i=0; i<d.rows.length-1; i++){
+    const a = d.rows[i], b = d.rows[i+1];
+    if(a.resolvidoDuplo || b.resolvidoDuplo) continue;
+    if(clienteGenerico(a.cliente)) continue;
+    if(a.cliente && a.cliente === b.cliente){
+      duploPendente = { data: dataISO, indices:[i, i+1], cliente: a.cliente,
+                        horaA: a.hora, horaB: b.hora };
+      document.getElementById("duplo-texto").innerHTML =
+        "<b>" + a.hora + "</b> e <b>" + b.hora + "</b> têm o mesmo nome:<br><br>" +
+        "<b>" + a.cliente + "</b><br><br>" +
+        "É um serviço mais demorado, ou são dois serviços diferentes?";
+      document.getElementById("modal-duplo-overlay").style.display = "flex";
+      return;
+    }
   }
-  tab.textContent = w.label + dataLabel;
+}
 
-  let html = `
+function resolverDuplo(escolha){
+  if(!duploPendente) return;
+  const d = diaDe(duploPendente.data);
+  const [i, j] = duploPendente.indices;
+
+  if(escolha === "um"){
+    d.rows[i].fim = d.rows[j].hora;      // passa a 10:00-11:00
+    d.rows[i].resolvidoDuplo = true;
+    d.rows.splice(j, 1);                 // uma linha só, um valor
+  } else {
+    d.rows[i].resolvidoDuplo = true;
+    d.rows[j].resolvidoDuplo = true;     // duas linhas, dois valores
+  }
+
+  const dataISO = duploPendente.data;
+  duploPendente = null;
+  document.getElementById("modal-duplo-overlay").style.display = "none";
+  guardarDias();
+  renderDia(dataISO);
+  detetarNomesSeguidos(dataISO);         // pode haver mais casos no mesmo dia
+}
+
+/* =======================================================================
+   FUNDO DE CAIXA — transita do último dia fechado anterior,
+   seja ele de que semana for. Salta folgas e dias por fechar.
+   ======================================================================= */
+function fundoTransitadoPara(dataISO){
+  const anteriores = Object.keys(dias).filter(d => d < dataISO).sort();
+  for(let i = anteriores.length - 1; i >= 0; i--){
+    const d = dias[anteriores[i]];
+    if(d.folga) continue;
+    const base = (d.deixaCaixa !== undefined && d.deixaCaixa !== "") ? d.deixaCaixa : d.dinheiroContado;
+    if(base !== undefined && base !== ""){
+      const v = parseFloat(base);
+      if(!isNaN(v)) return { valor: v, data: anteriores[i] };
+    }
+    if(d.rows && d.rows.length) break;   // dia por fechar: não recuar mais
+  }
+  // tenta também no arquivo
+  const arq = Object.keys(arquivo).filter(d => d < dataISO).sort();
+  for(let i = arq.length - 1; i >= 0; i--){
+    const d = arquivo[arq[i]];
+    const base = (d.deixaCaixa !== undefined && d.deixaCaixa !== "") ? d.deixaCaixa : d.dinheiroContado;
+    if(base !== undefined && base !== ""){
+      const v = parseFloat(base);
+      if(!isNaN(v)) return { valor: v, data: arq[i] };
+    }
+  }
+  return null;
+}
+
+/* =======================================================================
+   NAVEGAÇÃO
+   ======================================================================= */
+function irSemanaAtual(){
+  semanaVista = isoDe(segundaDe(new Date()));
+  dataAtiva = null;
+  renderSemana();
+}
+function navegarSemana(n){
+  semanaVista = somarDias(semanaVista, n * 7);
+  dataAtiva = null;
+  renderSemana();
+}
+
+function renderSemana(){
+  const datas = datasDaSemana(semanaVista);
+  const fim = datas[datas.length-1];
+  document.getElementById("semana-titulo").textContent =
+    ddmm(semanaVista) + "  a  " + ddmm(fim);
+
+  if(!dataAtiva || datas.indexOf(dataAtiva) === -1){
+    const hojeISO = isoDe(new Date());
+    dataAtiva = datas.indexOf(hojeISO) !== -1 ? hojeISO : datas[0];
+  }
+
+  const tabsEl = document.getElementById("tabs");
+  const daysEl = document.getElementById("days");
+  tabsEl.innerHTML = "";
+  daysEl.innerHTML = "";
+
+  datas.forEach(function(iso, idx){
+    const d = dias[iso];
+    const tab = document.createElement("div");
+    tab.className = "tab" + (iso === dataAtiva ? " active" : "");
+    tab.onclick = function(){ dataAtiva = iso; renderSemana(); };
+
+    let marca = "";
+    if(d && d.rows && d.rows.length){
+      marca = d.enviado
+        ? '<span class="marca enviado">✓ enviado</span>'
+        : '<span class="marca por-enviar">● por enviar</span>';
+    } else if(d && d.folga){
+      marca = '<span class="marca">folga</span>';
+    }
+    tab.innerHTML = "<span>" + DIAS_SEMANA[idx] + " " + ddmm(iso) + "</span>" + marca;
+    tabsEl.appendChild(tab);
+
+    const box = document.createElement("div");
+    box.className = "day" + (iso === dataAtiva ? " active" : "");
+    box.id = "daybox_" + iso;
+    daysEl.appendChild(box);
+  });
+
+  datas.forEach(renderDia);
+  atualizarAvisoFooter();
+}
+
+/* =======================================================================
+   RENDER DE UM DIA
+   ======================================================================= */
+function renderDia(dataISO){
+  const box = document.getElementById("daybox_" + dataISO);
+  if(!box) return;
+  const d = dias[dataISO] || { folga:false, enviado:false, rows:[] };
+  const nomeDia = DIAS_SEMANA[(dataDeISO(dataISO).getDay()+6)%7] || "";
+
+  let html = "";
+
+  if(d.rows.length && !d.enviado){
+    html += `<div class="aviso alerta"><b>Este dia ainda não foi enviado</b> para o controlo central.</div>`;
+  } else if(d.enviado){
+    const quando = d.enviadoEm ? (" em " + d.enviadoEm) : "";
+    const prazo = d.foraPrazo ? " <b>(fora de prazo)</b>" : "";
+    html += `<div class="aviso ok">Enviado${quando}${prazo}.</div>`;
+  }
+
+  html += `
     <div class="upload-box">
-      <div>${w.label}${d.title ? " — "+d.title : ""}</div>
-      <input type="file" id="file_${dayId}" accept="image/*" multiple>
+      <div style="font-weight:600; margin-bottom:4px;">${nomeDia} — ${ddmm(dataISO)}</div>
+      <input type="file" id="file_${dataISO}" accept="image/*" multiple>
       <div>
-        <button class="btn" id="btn_${dayId}">Processar screenshots</button>
-        <button class="btn secondary" onclick="marcarFolga('${dayId}')">Marcar folga</button>
+        <button class="btn" id="btn_${dataISO}">Processar screenshots</button>
+        <button class="btn secondary" onclick="marcarFolga('${dataISO}')">Folga</button>
       </div>
-      <div class="status" id="status_${dayId}"></div>
+      <div class="status" id="status_${dataISO}"></div>
     </div>`;
 
   if(d.folga){
-    html += `<div class="nota" style="font-size:.95rem;padding:20px 0;">Dia marcado como folga.</div>`;
-  } else if(d.rows.length){
-    d.rows.forEach((r, ri) => {
+    html += '<div class="nota" style="font-size:.95rem; padding:20px 0;">Dia marcado como folga.</div>';
+    box.innerHTML = html;
+    ligarBotaoUpload(dataISO);
+    return;
+  }
+
+  if(d.rows.length){
+    d.rows.forEach(function(r, ri){
+      const horaTxt = r.fim ? (r.hora + "-" + r.fim) : r.hora;
       html += `
         <div class="row">
-          <button class="del" onclick="apagarLinha('${dayId}',${ri})">×</button>
+          <button class="del" onclick="apagarLinha('${dataISO}',${ri})">×</button>
           <div class="row-top">
-            <input class="hora" value="${r.hora}" onchange="editarCampo('${dayId}',${ri},'hora',this.value)">
-            <input class="cliente" value="${r.cliente.replace(/"/g,'&quot;')}" onchange="editarCampo('${dayId}',${ri},'cliente',this.value)">
+            <input class="hora" value="${horaTxt}" onchange="editarCampo('${dataISO}',${ri},'horaTexto',this.value)">
+            <input class="cliente" value="${(r.cliente||'').replace(/"/g,'&quot;')}" onchange="editarCampo('${dataISO}',${ri},'cliente',this.value)">
           </div>
           <div class="row-controls">
             <div class="valor-wrap">
               <span>€</span>
-              <input type="number" inputmode="decimal" step="0.5" min="0" value="${r.valor}"
-                     onchange="editarCampo('${dayId}',${ri},'valor',this.value)">
+              <input type="number" inputmode="decimal" step="0.5" min="0" value="${r.valor ?? ""}"
+                     onchange="editarCampo('${dataISO}',${ri},'valor',this.value)">
             </div>
             <div class="metodos">
               ${METODOS.map(op => `
                 <div class="metodo">
-                  <input type="radio" name="metodo_${dayId}_${ri}" id="m_${dayId}_${ri}_${op.value}"
-                         ${r.metodo===op.value?"checked":""} onclick="editarCampo('${dayId}',${ri},'metodo','${op.value}')">
-                  <label for="m_${dayId}_${ri}_${op.value}" title="${op.title}">${op.label}</label>
+                  <input type="radio" name="m_${dataISO}_${ri}" id="m_${dataISO}_${ri}_${op.value}"
+                         ${r.metodo===op.value?"checked":""} onclick="editarCampo('${dataISO}',${ri},'metodo','${op.value}')">
+                  <label for="m_${dataISO}_${ri}_${op.value}" title="${op.title}">${op.label}</label>
                 </div>`).join("")}
             </div>
           </div>
         </div>`;
     });
-    html += `<div class="add-row"><button class="btn secondary" onclick="adicionarLinha('${dayId}')">+ adicionar cliente</button></div>`;
+    html += `<div class="add-row"><button class="btn secondary" onclick="adicionarLinha('${dataISO}')">+ adicionar cliente</button></div>`;
 
-    let totEur=0, totMbw=0, totEr=0, totNP=0;
-    d.rows.forEach(r => {
+    let tEur=0, tMbw=0, tEr=0, tNp=0;
+    d.rows.forEach(function(r){
       const v = parseFloat(r.valor)||0;
-      if(r.metodo==="€") totEur+=v;
-      if(r.metodo==="MBW") totMbw+=v;
-      if(r.metodo==="ER") totEr+=v;
-      if(r.metodo==="NP") totNP+=v;
+      if(r.metodo==="€") tEur+=v;
+      if(r.metodo==="MBW") tMbw+=v;
+      if(r.metodo==="ER") tEr+=v;
+      if(r.metodo==="NP") tNp+=v;
     });
-    const recebido = totEur+totMbw+totEr;
+    const recebido = tEur+tMbw+tEr;
     html += `
       <div class="day-summary">
         <div>
-          <div style="font-size:.65rem;opacity:.7;letter-spacing:.08em;">RECEBIDO HOJE</div>
-          <div class="tot">${recebido.toFixed(2).replace(".",",")} €</div>
+          <div style="font-size:.64rem; opacity:.7; letter-spacing:.08em;">RECEBIDO NESTE DIA</div>
+          <div class="tot">${eur(recebido)}</div>
         </div>
-        <div class="breakdown">€ ${totEur.toFixed(2).replace(".",",")} · MBW ${totMbw.toFixed(2).replace(".",",")} · ER ${totEr.toFixed(2).replace(".",",")}${totNP>0 ? " · Por cobrar "+totNP.toFixed(2).replace(".",",") : ""}</div>
+        <div class="breakdown">€ ${eur(tEur,false)} · MBW ${eur(tMbw,false)} · ER ${eur(tEr,false)}${tNp>0 ? " · Por cobrar "+eur(tNp,false) : ""}</div>
       </div>`;
 
-    let fundoInicial = 0, fundoAuto = false, diaAnteriorLabel = "";
-    if(idx > 0){
-      const transitado = fundoTransitadoDe(idx);
-      if(transitado){
-        fundoInicial = transitado.valor;
-        fundoAuto = true;
-        diaAnteriorLabel = transitado.diaLabel;
-      }
-    }
-    if(!fundoAuto){ fundoInicial = parseFloat(d.fundoInicial) || 0; }
-    const dinheiroContado = d.dinheiroContado === "" || d.dinheiroContado === undefined ? null : parseFloat(d.dinheiroContado);
-    const esperado = fundoInicial + totEur;
-    const temContagem = dinheiroContado !== null && !isNaN(dinheiroContado);
-    const diferenca = temContagem ? (dinheiroContado - esperado) : null;
-    const corDif = !temContagem ? "#8a7d6c" : (Math.abs(diferenca) < 0.005 ? "#3f6b4a" : "#a4442f");
-    const deixaCaixaVal = d.deixaCaixa === "" || d.deixaCaixa === undefined ? null : parseFloat(d.deixaCaixa);
-    const temFica = deixaCaixaVal !== null && !isNaN(deixaCaixaVal);
-    const retirado = (temContagem && temFica) ? (dinheiroContado - deixaCaixaVal) : 0;
+    // fecho de caixa
+    const transitado = fundoTransitadoPara(dataISO);
+    const fundoAuto = !!transitado;
+    const fundo = fundoAuto ? transitado.valor : (parseFloat(d.fundoInicial)||0);
+    const contado = (d.dinheiroContado === "" || d.dinheiroContado === undefined) ? null : parseFloat(d.dinheiroContado);
+    const temContagem = contado !== null && !isNaN(contado);
+    const esperado = fundo + tEur;
+    const dif = temContagem ? (contado - esperado) : null;
+    const corDif = !temContagem ? "#8a7d6c" : (Math.abs(dif) < 0.005 ? "var(--verde)" : "var(--vermelho)");
+    const fica = (d.deixaCaixa === "" || d.deixaCaixa === undefined) ? null : parseFloat(d.deixaCaixa);
+    const temFica = fica !== null && !isNaN(fica);
+    const retirado = (temContagem && temFica) ? (contado - fica) : 0;
+
     html += `
-      <div class="row" style="border-color:#a3762b;">
+      <div class="row" style="border-color:var(--brass);">
         <div style="font-weight:700; margin-bottom:10px;">🔒 Fecho de Caixa do Dia</div>
         <div class="row-controls" style="margin-bottom:8px;">
           ${fundoAuto
-            ? `<div style="font-size:.85rem; color:#6b6055;">Fundo inicial (transita de ${diaAnteriorLabel}): <b>${fundoInicial.toFixed(2).replace(".",",")} €</b></div>`
-            : `<div class="valor-wrap"><span title="Só na primeira vez — depois transita sozinho todos os dias">Fundo inicial €</span>
-                <input type="number" inputmode="decimal" step="0.5" value="${d.fundoInicial ?? ""}"
-                       onchange="editarFechoCaixa('${dayId}','fundoInicial',this.value)"></div>`}
+            ? `<div style="font-size:.85rem; color:#6b6055;">Fundo inicial (transita de ${ddmm(transitado.data)}): <b>${eur(fundo)}</b></div>`
+            : `<div class="valor-wrap"><span>Fundo inicial €</span>
+                <input type="number" step="0.5" value="${d.fundoInicial ?? ""}"
+                       onchange="editarFecho('${dataISO}','fundoInicial',this.value)"></div>`}
         </div>
         <div class="row-controls" style="margin-bottom:10px;">
-          <div class="valor-wrap"><span title="Conta o dinheiro físico na gaveta agora">Dinheiro contado €</span>
-            <input type="number" inputmode="decimal" step="0.5" value="${d.dinheiroContado ?? ""}"
-                   onchange="editarFechoCaixa('${dayId}','dinheiroContado',this.value)">
-          </div>
+          <div class="valor-wrap"><span>Dinheiro contado €</span>
+            <input type="number" step="0.5" value="${d.dinheiroContado ?? ""}"
+                   onchange="editarFecho('${dataISO}','dinheiroContado',this.value)"></div>
         </div>
         <div class="row-controls" style="margin-bottom:10px;">
-          <div class="valor-wrap"><span title="Do que contaste, quanto deixas na gaveta (o resto é o que retiras)">Fica em caixa p/ amanhã €</span>
-            <input type="number" inputmode="decimal" step="0.5" value="${d.deixaCaixa ?? ""}"
-                   onchange="editarFechoCaixa('${dayId}','deixaCaixa',this.value)">
-          </div>
+          <div class="valor-wrap"><span>Fica em caixa €</span>
+            <input type="number" step="0.5" value="${d.deixaCaixa ?? ""}"
+                   onchange="editarFecho('${dataISO}','deixaCaixa',this.value)"></div>
         </div>
         <div style="font-size:.8rem; color:#6b6055; line-height:1.6;">
-          Devia estar em caixa: <b>${esperado.toFixed(2).replace(".",",")} €</b> (fundo + € recebido hoje)<br>
-          Diferença: <b style="color:${corDif};">${temContagem ? diferenca.toFixed(2).replace(".",",")+" €" : "— (falta contar)"}</b>${temContagem && temFica ? `<br>Retiras hoje: <b>${retirado.toFixed(2).replace(".",",")} €</b>` : ""}
+          Devia estar em caixa: <b>${eur(esperado)}</b><br>
+          Diferença: <b style="color:${corDif};">${temContagem ? eur(dif) : "— (falta contar)"}</b>
+          ${temContagem && temFica ? "<br>Retiras: <b>" + eur(retirado) + "</b>" : ""}
         </div>
       </div>`;
   } else {
-    html += `<div class="add-row"><button class="btn secondary" onclick="adicionarLinha('${dayId}')">+ adicionar cliente à mão</button></div>`;
+    html += `<div class="add-row"><button class="btn secondary" onclick="adicionarLinha('${dataISO}')">+ adicionar cliente à mão</button></div>`;
   }
 
   box.innerHTML = html;
-  document.getElementById(`btn_${dayId}`).onclick = () => {
-    const files = document.getElementById(`file_${dayId}`).files;
-    if(!files.length){ document.getElementById(`status_${dayId}`).textContent = "Escolhe primeiro os screenshots deste dia."; return; }
-    processarDia(dayId, files);
+  ligarBotaoUpload(dataISO);
+}
+
+function ligarBotaoUpload(dataISO){
+  const btn = document.getElementById("btn_" + dataISO);
+  if(!btn) return;
+  btn.onclick = function(){
+    const files = document.getElementById("file_" + dataISO).files;
+    if(!files.length){
+      document.getElementById("status_" + dataISO).textContent = "Escolhe primeiro os screenshots.";
+      return;
+    }
+    processarDia(dataISO, files);
   };
 }
 
-function editarFechoCaixa(dayId, campo, valor){
-  state[dayId][campo] = valor;
-  guardarEstado();
-  renderDia(dayId);
+function eur(v, comSimbolo){
+  const t = (Number(v)||0).toFixed(2).replace(".",",");
+  return (comSimbolo === false) ? t : t + " €";
 }
 
-function editarCampo(dayId, idx, campo, valor){
-  state[dayId].rows[idx][campo] = valor;
-  guardarEstado();
-  if(campo==="valor" || campo==="metodo") renderDia(dayId);
+/* =======================================================================
+   EDIÇÃO
+   ======================================================================= */
+function editarCampo(dataISO, idx, campo, valor){
+  const d = diaDe(dataISO);
+  if(campo === "horaTexto"){
+    const partes = String(valor).split("-");
+    d.rows[idx].hora = partes[0].trim();
+    d.rows[idx].fim = partes[1] ? partes[1].trim() : null;
+  } else {
+    d.rows[idx][campo] = valor;
+  }
+  d.enviado = false;                 // alterou: volta a precisar de envio
+  guardarDias();
+  renderSemana();
 }
-function apagarLinha(dayId, idx){
-  state[dayId].rows.splice(idx,1);
-  guardarEstado();
-  renderDia(dayId);
+function editarFecho(dataISO, campo, valor){
+  const d = diaDe(dataISO);
+  d[campo] = valor;
+  d.enviado = false;
+  guardarDias();
+  renderSemana();
 }
-function adicionarLinha(dayId){
-  state[dayId].rows.push({hora:"00:00", cliente:"Cabelo - ", valor:"", metodo:null});
-  state[dayId].folga = false;
-  guardarEstado();
-  renderDia(dayId);
+function apagarLinha(dataISO, idx){
+  const d = diaDe(dataISO);
+  d.rows.splice(idx,1);
+  d.enviado = false;
+  guardarDias();
+  renderSemana();
 }
-function marcarFolga(dayId){
-  state[dayId] = {title:null, folga:true, rows:[]};
-  guardarEstado();
-  renderDia(dayId);
+function adicionarLinha(dataISO){
+  const d = diaDe(dataISO);
+  d.rows.push({ hora:"00:00", cliente:"Cabelo - ", valor:"", metodo:null, fim:null });
+  d.folga = false;
+  d.enviado = false;
+  guardarDias();
+  renderSemana();
 }
-function novaSemanaFn(){
-  if(!confirm("Isto apaga todos os dados preenchidos desta semana. Continuar?")) return;
-  WEEKDAYS.forEach(w => state[w.id] = estadoInicialDia());
-  guardarEstado();
-  WEEKDAYS.forEach(w => renderDia(w.id));
+function marcarFolga(dataISO){
+  if(dias[dataISO] && dias[dataISO].rows.length &&
+     !confirm("Este dia tem marcações. Marcar como folga apaga-as. Continuar?")) return;
+  dias[dataISO] = { folga:true, enviado:false, rows:[] };
+  guardarDias();
+  renderSemana();
 }
 
+/* =======================================================================
+   FUNCIONÁRIO
+   ======================================================================= */
+function mudarFuncionario(v){
+  if(v === "Outro"){
+    const nome = prompt("Escreve o teu nome:");
+    if(!nome) return;
+    config.funcionario = nome;
+  } else {
+    config.funcionario = v;
+  }
+  guardarConfig();
+  mostrarSaudacao();
+  atualizarTotalMes();
+}
+function mostrarSaudacao(){
+  if(!config.funcionario) return;
+  const c = document.getElementById("confirmacao-nome");
+  c.style.display = "block";
+  c.textContent = "Olá, " + config.funcionario + "!";
+}
+
+/* =======================================================================
+   ENVIO — só a semana à vista
+   ======================================================================= */
+function atualizarAvisoFooter(){
+  const el = document.getElementById("envio-status");
+  const porEnviar = datasDaSemana(semanaVista)
+    .filter(iso => dias[iso] && dias[iso].rows.length && !dias[iso].enviado);
+  if(porEnviar.length){
+    el.innerHTML = '<span style="color:var(--vermelho);">' + porEnviar.length +
+                   ' dia(s) por enviar nesta semana</span>';
+  } else {
+    el.textContent = "";
+  }
+}
+
+async function enviarSemanaVista(){
+  const el = document.getElementById("envio-status");
+  if(!config.funcionario){ el.textContent = "Escolhe primeiro quem és."; return; }
+
+  const datas = datasDaSemana(semanaVista);
+  const registos = [];
+  const fechos = [];
+
+  datas.forEach(function(iso){
+    const d = dias[iso];
+    if(!d || d.folga || !d.rows.length) return;
+    const nomeDia = DIAS_SEMANA[(dataDeISO(iso).getDay()+6)%7];
+
+    d.rows.forEach(function(r){
+      registos.push({
+        data: iso,
+        dia: nomeDia,
+        hora: r.fim ? (r.hora + "-" + r.fim) : r.hora,
+        cliente: r.cliente,
+        valor: parseFloat(r.valor) || 0,
+        metodo: r.metodo === "NP" ? "Não pagou" : (r.metodo || "")
+      });
+    });
+
+    if(d.fundoInicial !== undefined || d.dinheiroContado !== undefined){
+      const tEur = d.rows.reduce((s,r)=> s + (r.metodo==="€" ? (parseFloat(r.valor)||0) : 0), 0);
+      const transitado = fundoTransitadoPara(iso);
+      const fundo = transitado ? transitado.valor : (parseFloat(d.fundoInicial)||0);
+      const contado = (d.dinheiroContado === "" || d.dinheiroContado === undefined) ? null : parseFloat(d.dinheiroContado);
+      const fica = (d.deixaCaixa === "" || d.deixaCaixa === undefined) ? null : parseFloat(d.deixaCaixa);
+      fechos.push({
+        data: iso, dia: nomeDia,
+        fundoInicial: fundo, recebidoSistema: tEur, esperado: fundo + tEur,
+        dinheiroContado: contado,
+        diferenca: contado !== null ? (contado - (fundo + tEur)) : null,
+        deixaCaixa: fica,
+        retirado: (contado !== null && fica !== null) ? (contado - fica) : null
+      });
+    }
+  });
+
+  if(!registos.length){ el.textContent = "Nada para enviar nesta semana."; return; }
+
+  const atrasado = foraDePrazo(semanaVista);
+  if(atrasado){
+    const ok = confirm(
+      "Esta semana (" + ddmm(semanaVista) + ") já passou do prazo de envio.\n\n" +
+      "O envio fica assinalado como FORA DE PRAZO no controlo central.\n\n" +
+      "Confirmar envio?"
+    );
+    if(!ok){ el.textContent = "Envio cancelado."; return; }
+  }
+
+  el.textContent = "A enviar...";
+  try{
+    const resp = await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        funcionario: config.funcionario,
+        semana: semanaVista,
+        foraPrazo: atrasado,
+        registos: registos,
+        fechosCaixa: fechos
+      })
+    });
+    const json = await resp.json();
+    if(json.status === "erro"){
+      el.textContent = "Erro no servidor: " + json.mensagem;
+      return;
+    }
+    const agora = new Date().toLocaleString("pt-PT", {day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"});
+    datas.forEach(function(iso){
+      const d = dias[iso];
+      if(d && !d.folga && d.rows.length){
+        d.enviado = true;
+        d.enviadoEm = agora;
+        d.foraPrazo = atrasado;
+      }
+    });
+    guardarDias();
+    renderSemana();
+    el.textContent = "Enviado: " + registos.length + " registos (" +
+                     (json.novos ?? "?") + " novos, " + (json.atualizados ?? "?") + " atualizados).";
+    atualizarTotalMes();
+  }catch(err){
+    el.textContent = "Erro ao enviar — verifica a ligação e tenta outra vez.";
+  }
+}
+
+/* =======================================================================
+   CONTADORES
+   ======================================================================= */
+async function atualizarTotalMes(){
+  const el = document.getElementById("total-mes");
+  if(config.funcionario){
+    try{
+      const resp = await fetch(WEBHOOK_URL + "?acao=totalMes&funcionario=" + encodeURIComponent(config.funcionario));
+      const json = await resp.json();
+      el.textContent = "Faturação de " + MESES_PT[json.mes-1] + ": " + eur(json.total);
+      el.style.display = "block";
+    }catch(e){}
+  }
+  atualizarTotalMesTodos();
+}
+async function atualizarTotalMesTodos(){
+  const box = document.getElementById("total-mes-todos");
+  const lista = document.getElementById("total-mes-todos-lista");
+  try{
+    const resp = await fetch(WEBHOOK_URL + "?acao=totalMesTodos");
+    const json = await resp.json();
+    const nomes = Object.keys(json.totais || {}).sort();
+    if(!nomes.length){ box.style.display = "none"; return; }
+    lista.innerHTML = nomes.map(n =>
+      '<div style="display:flex; justify-content:space-between; gap:12px;"><span>' + n +
+      '</span><b>' + eur(json.totais[n]) + '</b></div>').join("");
+    box.style.display = "block";
+  }catch(e){ box.style.display = "none"; }
+}
+
+/* =======================================================================
+   EXPORTAR EXCEL — semana à vista
+   ======================================================================= */
 function exportarExcel(){
   const wb = XLSX.utils.book_new();
-  WEEKDAYS.forEach(w => {
-    const d = state[w.id];
+  datasDaSemana(semanaVista).forEach(function(iso, idx){
+    const d = dias[iso] || { folga:false, rows:[] };
     const aoa = [["Hora","Cliente / Serviço","Valor (€)","Método"]];
     if(d.folga || !d.rows.length){
       aoa.push(["","Folga / sem marcações","",""]);
     } else {
-      d.rows.forEach(r => {
-        const metodoTxt = r.metodo==="NP" ? "Não pagou" : (r.metodo||"");
-        aoa.push([r.hora, r.cliente, parseFloat(r.valor)||"", metodoTxt]);
+      d.rows.forEach(function(r){
+        aoa.push([ r.fim ? (r.hora+"-"+r.fim) : r.hora, r.cliente,
+                   parseFloat(r.valor)||"", r.metodo==="NP" ? "Não pagou" : (r.metodo||"") ]);
       });
-      aoa.push(["","TOTAL", {f:`SUM(C2:C${d.rows.length+1})`}, ""]);
+      aoa.push(["","TOTAL",{f:`SUM(C2:C${d.rows.length+1})`},""]);
     }
     const ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [{wch:8},{wch:44},{wch:12},{wch:10}];
-    XLSX.utils.book_append_sheet(wb, ws, w.label + (d.title? " "+d.title.split(" de ")[0]:""));
+    ws['!cols'] = [{wch:12},{wch:44},{wch:12},{wch:10}];
+    XLSX.utils.book_append_sheet(wb, ws, DIAS_SEMANA[idx] + " " + ddmm(iso));
   });
-  XLSX.writeFile(wb, "fecho_caixa_semana.xlsx");
+  XLSX.writeFile(wb, "fecho_caixa_" + semanaVista + ".xlsx");
 }
+
+/* =======================================================================
+   CAIXA FEMININA — segue o dia aberto na barbearia
+   ======================================================================= */
+function abrirModalFeminina(){
+  document.getElementById("modal-feminina-overlay").style.display = "flex";
+  const nomeDia = DIAS_SEMANA[(dataDeISO(dataAtiva).getDay()+6)%7];
+  document.getElementById("fem-data-label").textContent = "📅 " + nomeDia + " — " + ddmm(dataAtiva);
+  renderModalFeminina();
+}
+function fecharModalFeminina(){
+  document.getElementById("modal-feminina-overlay").style.display = "none";
+}
+function fundoTransitadoFeminina(dataISO){
+  const datas = Object.keys(stateFem).filter(d => d < dataISO).sort();
+  for(let i = datas.length-1; i >= 0; i--){
+    const d = stateFem[datas[i]];
+    const base = (d.deixaCaixa !== undefined && d.deixaCaixa !== "") ? d.deixaCaixa : d.dinheiroContado;
+    if(base !== undefined && base !== ""){
+      const v = parseFloat(base);
+      if(!isNaN(v)) return { valor:v, data:datas[i] };
+    }
+  }
+  return null;
+}
+function editarFeminina(campo, valor){
+  if(!stateFem[dataAtiva]) stateFem[dataAtiva] = {};
+  stateFem[dataAtiva][campo] = valor;
+  guardarFem();
+  renderModalFeminina();
+}
+function renderModalFeminina(){
+  const d = stateFem[dataAtiva] || {};
+  const transitado = fundoTransitadoFeminina(dataAtiva);
+  const fundoAuto = !!transitado;
+  const fundo = fundoAuto ? transitado.valor : (parseFloat(d.fundoInicial)||0);
+  const contado = (d.dinheiroContado === "" || d.dinheiroContado === undefined) ? null : parseFloat(d.dinheiroContado);
+  const temContagem = contado !== null && !isNaN(contado);
+  const fica = (d.deixaCaixa === "" || d.deixaCaixa === undefined) ? null : parseFloat(d.deixaCaixa);
+  const temFica = fica !== null && !isNaN(fica);
+  const retirado = (temContagem && temFica) ? (contado - fica) : 0;
+  const recebido = temContagem ? (contado - fundo) : null;
+
+  document.getElementById("fem-corpo").innerHTML = `
+    <div class="campo">
+      ${fundoAuto
+        ? `<div style="font-size:.85rem; color:#6b6055;">Fundo inicial (transita de ${ddmm(transitado.data)}): <b>${eur(fundo)}</b></div>`
+        : `<label>Fundo inicial €</label>
+           <input type="number" step="0.5" value="${d.fundoInicial ?? ""}" onchange="editarFeminina('fundoInicial', this.value)">`}
+    </div>
+    <div class="campo">
+      <label>Dinheiro contado €</label>
+      <input type="number" step="0.5" value="${d.dinheiroContado ?? ""}" onchange="editarFeminina('dinheiroContado', this.value)">
+    </div>
+    <div class="campo">
+      <label>Fica em caixa p/ amanhã €</label>
+      <input type="number" step="0.5" value="${d.deixaCaixa ?? ""}" onchange="editarFeminina('deixaCaixa', this.value)">
+    </div>
+    <div style="font-size:.8rem; color:#6b6055; line-height:1.6; margin-bottom:14px;">
+      ${temContagem ? "Recebido (contado − fundo): <b>" + eur(recebido) + "</b>" : "Falta contar o dinheiro."}
+      ${temContagem && temFica ? "<br>Retiras: <b>" + eur(retirado) + "</b>" : ""}
+    </div>
+    <button class="btn" style="width:100%;" onclick="enviarFeminina()">Enviar p/ controlo central</button>
+    <div id="fem-status" style="font-size:.75rem; color:var(--brass-dark); text-align:center; margin-top:8px;"></div>
+  `;
+}
+async function enviarFeminina(){
+  const el = document.getElementById("fem-status");
+  const d = stateFem[dataAtiva] || {};
+  const transitado = fundoTransitadoFeminina(dataAtiva);
+  const fundo = transitado ? transitado.valor : (parseFloat(d.fundoInicial)||0);
+  const contado = (d.dinheiroContado === "" || d.dinheiroContado === undefined) ? null : parseFloat(d.dinheiroContado);
+  const fica = (d.deixaCaixa === "" || d.deixaCaixa === undefined) ? null : parseFloat(d.deixaCaixa);
+  el.textContent = "A enviar...";
+  try{
+    const resp = await fetch(WEBHOOK_URL, {
+      method:"POST",
+      headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        tipo:"feminina",
+        fechosCaixaFeminina:[{
+          data: dataAtiva, fundoInicial: fundo, dinheiroContado: contado,
+          recebidoHoje: contado !== null ? (contado - fundo) : null,
+          deixaCaixa: fica,
+          retirado: (contado !== null && fica !== null) ? (contado - fica) : null
+        }]
+      })
+    });
+    await resp.json();
+    el.textContent = "Enviado às " + new Date().toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"}) + ".";
+  }catch(e){
+    el.textContent = "Erro ao enviar — tenta outra vez.";
+  }
+}
+
+/* =======================================================================
+   ARRANQUE
+   ======================================================================= */
+arquivarMesesAnteriores();
+
+if(config.funcionario){
+  const sel = document.getElementById("funcionario-select");
+  if(["Zé-Tó","Joel","Samuel"].indexOf(config.funcionario) !== -1){
+    sel.value = config.funcionario;
+  } else {
+    const opt = document.createElement("option");
+    opt.value = config.funcionario; opt.textContent = config.funcionario;
+    sel.insertBefore(opt, sel.lastElementChild);
+    sel.value = config.funcionario;
+  }
+  mostrarSaudacao();
+}
+
+irSemanaAtual();
+atualizarTotalMes();
 </script>
 </body>
 </html>
